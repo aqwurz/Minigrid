@@ -12,12 +12,38 @@ COLORS = {
     "purple": np.array([112, 39, 195]),
     "yellow": np.array([255, 255, 0]),
     "grey": np.array([100, 100, 100]),
+    "white": np.array([255, 255, 255]),
+    "ice": np.array([200, 200, 255]),
+    "brown": np.array([100, 100, 0]),
+    "lightgrey": np.array([200, 200, 200]),
+    "lightgreen": np.array([237, 248, 177]),
+    "offwhite": np.array([220, 220, 255]),
+    "greyice": np.array([200, 200, 220]),
+    "lightbrown": np.array([180, 180, 0]),
+    "softgreen": np.array([127, 205, 187]),
+    "softblue": np.array([44, 127, 184])
 }
 
 COLOR_NAMES = sorted(list(COLORS.keys()))
 
 # Used to map colors to integers
-COLOR_TO_IDX = {"red": 0, "green": 1, "blue": 2, "purple": 3, "yellow": 4, "grey": 5}
+COLOR_TO_IDX = {"red": 0,
+                "green": 1,
+                "blue": 2,
+                "purple": 3,
+                "yellow": 4,
+                "grey": 5,
+                "white": 6,
+                "ice": 7,
+                "brown": 8,
+                "lightgrey": 9,
+                "lightgreen": 10,
+                "offwhite": 11,
+                "greyice": 12,
+                "lightbrown": 13,
+                "softgreen": 14,
+                "softblue": 15,
+                }
 
 IDX_TO_COLOR = dict(zip(COLOR_TO_IDX.values(), COLOR_TO_IDX.keys()))
 
@@ -34,6 +60,16 @@ OBJECT_TO_IDX = {
     "goal": 8,
     "lava": 9,
     "agent": 10,
+    "grass": 11,
+    "snow": 12,
+    "water": 13,
+    "ice": 14,
+    "mud": 15,
+    "soil": 16,
+    "hill": 17,
+    "powdersnow": 18,
+    "slope": 19,
+    "slopedice": 20
 }
 
 IDX_TO_OBJECT = dict(zip(OBJECT_TO_IDX.values(), OBJECT_TO_IDX.keys()))

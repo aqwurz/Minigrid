@@ -97,6 +97,26 @@ class WorldObj:
             v = Goal()
         elif obj_type == "lava":
             v = Lava()
+        elif obj_type == "grass":
+            v = Grass()
+        elif obj_type == "snow":
+            v = Snow()
+        elif obj_type == "water":
+            v = Water()
+        elif obj_type == "ice":
+            v = Ice()
+        elif obj_type == "mud":
+            v = Mud()
+        elif obj_type == "soil":
+            v = Soil()
+        elif obj_type == "hill":
+            v = Hill()
+        elif obj_type == "powdersnow":
+            v = PowderSnow()
+        elif obj_type == "slope":
+            v = Slope()
+        elif obj_type == "slopedice":
+            v = SlopedIce()
         else:
             assert False, "unknown object type in decode '%s'" % obj_type
 
@@ -110,9 +130,13 @@ class WorldObj:
 class Goal(WorldObj):
     def __init__(self):
         super().__init__("goal", "green")
+        self.is_hazardous = False
 
     def can_overlap(self):
         return True
+
+    def switch_season(self):
+        pass
 
     def render(self, img):
         fill_coords(img, point_in_rect(0, 1, 0, 1), COLORS[self.color])
@@ -138,9 +162,13 @@ class Floor(WorldObj):
 class Lava(WorldObj):
     def __init__(self):
         super().__init__("lava", "red")
+        self.is_hazardous = True
 
     def can_overlap(self):
         return True
+
+    def switch_season(self):
+        pass
 
     def render(self, img):
         c = (255, 128, 0)
@@ -158,9 +186,130 @@ class Lava(WorldObj):
             fill_coords(img, point_in_line(0.7, yhi, 0.9, ylo, r=0.03), (0, 0, 0))
 
 
+class Floorlike(WorldObj):
+    def __init__(self, type: str, color: str):
+        super().__init__(type, color=color)
+        self.color_alt = None
+        self.should_toggle = False
+        self.is_hazardous = False
+
+    def switch_season(self):
+        self.color, self.color_alt = self.color_alt, self.color
+        if self.should_toggle:
+            self.is_hazardous = not self.is_hazardous
+
+    def can_overlap(self):
+        return True
+
+    def render(self, img):
+        # Give the floor a pale color
+        color = COLORS[self.color]
+        fill_coords(img, point_in_rect(0, 1, 0, 1), color)
+
+
+class Lavalike(WorldObj):
+    def __init__(self, type: str, color: str):
+        super().__init__(type, color=color)
+        self.color_alt = None
+        self.should_toggle = False
+        self.is_hazardous = False
+
+    def can_overlap(self):
+        return True
+
+    def switch_season(self):
+        self.color, self.color_alt = self.color_alt, self.color
+        if self.should_toggle:
+            self.is_hazardous = not self.is_hazardous
+
+    def render(self, img):
+        c = COLORS[self.color]
+
+        # Background color
+        fill_coords(img, point_in_rect(0, 1, 0, 1), c)
+
+        # Little waves
+        for i in range(3):
+            ylo = 0.3 + 0.2 * i
+            yhi = 0.4 + 0.2 * i
+            fill_coords(img, point_in_line(0.1, ylo, 0.3, yhi, r=0.03), (0, 0, 0))
+            fill_coords(img, point_in_line(0.3, yhi, 0.5, ylo, r=0.03), (0, 0, 0))
+            fill_coords(img, point_in_line(0.5, ylo, 0.7, yhi, r=0.03), (0, 0, 0))
+            fill_coords(img, point_in_line(0.7, yhi, 0.9, ylo, r=0.03), (0, 0, 0))
+
+
+class Grass(Floorlike):
+    def __init__(self):
+        super().__init__("grass", "softgreen")
+        self.color_alt = "white"
+
+
+class Snow(Floorlike):
+    def __init__(self):
+        super().__init__("snow", "white")
+
+
+class Hill(Floorlike):
+    def __init__(self):
+        super().__init__("hill", "lightgreen")
+        self.color_alt = "offwhite"
+        self.should_toggle = True
+
+
+class Slope(Floorlike):
+    def __init__(self):
+        super().__init__("slope", "lightgrey")
+        self.color_alt = "greyice"
+        self.should_toggle = True
+
+
+class Ice(Floorlike):
+    def __init__(self):
+        super().__init__("ice", "ice")
+        self.is_hazardous = False
+
+
+class Soil(Floorlike):
+    def __init__(self):
+        super().__init__("soil", "lightbrown")
+        self.is_hazardous = False
+
+
+class SlopedIce(Lavalike):
+    def __init__(self):
+        super().__init__("slopedice", "greyice")
+        self.is_hazardous = True
+
+
+class Water(Lavalike):
+    def __init__(self):
+        super().__init__("water", "softblue")
+        self.color_alt = "ice"
+        self.is_hazardous = True
+        self.should_toggle = True
+
+
+class Mud(Lavalike):
+    def __init__(self):
+        super().__init__("mud", "brown")
+        self.color_alt = "lightbrown"
+        self.is_hazardous = True
+        self.should_toggle = True
+
+
+class PowderSnow(Lavalike):
+    def __init__(self):
+        super().__init__("powdersnow", "offwhite")
+        self.is_hazardous = True
+
+
 class Wall(WorldObj):
     def __init__(self, color: str = "grey"):
         super().__init__("wall", color)
+        self.is_hazardous = True
+
+    def switch_season(self):
+        pass
 
     def see_behind(self):
         return False
